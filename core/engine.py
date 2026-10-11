@@ -17,6 +17,7 @@ def database():
  CREATE TABLE IF NOT EXISTS metrics(experiment_id TEXT REFERENCES experiments(id),platform TEXT,window_start TEXT,window_end TEXT,views INTEGER,watch_seconds REAL,subscribers INTEGER,source TEXT,updated REAL,PRIMARY KEY(experiment_id,platform,window_start,window_end));
  CREATE TABLE IF NOT EXISTS audit(id INTEGER PRIMARY KEY,event TEXT,detail TEXT,created REAL);
  CREATE TABLE IF NOT EXISTS contacts(id TEXT PRIMARY KEY,name TEXT,url TEXT,email TEXT,reason TEXT,draft TEXT,status TEXT DEFAULT 'draft',UNIQUE(email));
+ CREATE TABLE IF NOT EXISTS clicks(day TEXT,platform TEXT,count INTEGER,PRIMARY KEY(day,platform));
  CREATE TABLE IF NOT EXISTS settings(key TEXT PRIMARY KEY,value TEXT);
  ''');return db
 
@@ -51,9 +52,16 @@ def register_asset(db,p):
  db.execute('INSERT INTO assets VALUES(?,?,?,?,?)',(ident,text(p['name']),kind,str(path),duration));return {'id':ident,'duration':duration}
 
 def dispatch(db,action,p):
+ if action=='click':
+  platform=p.get('platform')
+  if platform not in ('youtube','spotify'):raise ValueError('Destino inválido')
+  from datetime import datetime,timezone
+  day=datetime.now(timezone.utc).date().isoformat()
+  db.execute('INSERT INTO clicks VALUES(?,?,1) ON CONFLICT(day,platform) DO UPDATE SET count=count+1',(day,platform))
+  return {'saved':True}
  if action=='campaign':return json.loads((ROOT/'campaign.json').read_text())
  if action=='overview':
-  return {'tracks':rows(db,'SELECT * FROM tracks ORDER BY created DESC'),'assets':rows(db,'SELECT id,name,kind,duration FROM assets'),'experiments':rows(db,'SELECT e.*,t.title AS track_title FROM experiments e JOIN tracks t ON t.id=e.track_id ORDER BY e.created DESC'),'jobs':rows(db,'SELECT * FROM jobs ORDER BY created DESC LIMIT 50'),'metrics':rows(db,'SELECT * FROM metrics'),'contacts':rows(db,'SELECT * FROM contacts'),'catalog':json.loads((ROOT/'catalog.json').read_text()),'connections':{'google':bool(os.environ.get('GOOGLE_REFRESH_TOKEN') or db.execute('SELECT 1 FROM settings WHERE key="google_refresh"').fetchone()),'spotify':bool(os.environ.get('SPOTIFY_CLIENT_ID') and os.environ.get('SPOTIFY_CLIENT_SECRET')),'model':bool(os.environ.get('AI_GATEWAY_API_KEY'))}}
+  return {'tracks':rows(db,'SELECT * FROM tracks ORDER BY created DESC'),'assets':rows(db,'SELECT id,name,kind,duration FROM assets'),'experiments':rows(db,'SELECT e.*,t.title AS track_title FROM experiments e JOIN tracks t ON t.id=e.track_id ORDER BY e.created DESC'),'jobs':rows(db,'SELECT * FROM jobs ORDER BY created DESC LIMIT 50'),'metrics':rows(db,'SELECT * FROM metrics'),'contacts':rows(db,'SELECT * FROM contacts'),'clicks':rows(db,'SELECT * FROM clicks ORDER BY day DESC'),'ephemeral':os.environ.get('K1N_EPHEMERAL')=='1','catalog':json.loads((ROOT/'catalog.json').read_text()),'connections':{'google':bool(os.environ.get('GOOGLE_REFRESH_TOKEN') or db.execute('SELECT 1 FROM settings WHERE key="google_refresh"').fetchone()),'spotify':bool(os.environ.get('SPOTIFY_CLIENT_ID') and os.environ.get('SPOTIFY_CLIENT_SECRET')),'model':bool(os.environ.get('AI_GATEWAY_API_KEY'))}}
  if action=='oauth-start':
   from oauth import start
   return start(db)

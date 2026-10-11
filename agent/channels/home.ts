@@ -24,6 +24,12 @@ async function limited(request:Request,limit:number) {
 }
 const actions=new Set(['track','experiment','render','approve','published','metrics','report','contact','spotify-sync','youtube-sync','upload-private','oauth-start']);
 export default defineChannel({routes:[
+ GET('/go/:platform',async(_request,{params})=>{
+  const destinations:Record<string,string>={youtube:'https://www.youtube.com/watch?v=my4E2FRFuH8',spotify:'https://open.spotify.com/artist/5Kmf6GWJeI4y8XOTNZ5c63'};
+  if(!destinations[params.platform])return new Response('Destino inválido',{status:404});
+  await rpc('click',{platform:params.platform});
+  return new Response(null,{status:302,headers:{...headers,Location:destinations[params.platform]}});
+ }),
  GET('/listen',async()=>new Response(await readFile(resolve(project,'web/listen.html'),'utf8'),{headers:{...headers,'Content-Type':'text/html; charset=utf-8','Content-Security-Policy':"default-src 'self'; style-src 'unsafe-inline'; frame-src https://www.youtube-nocookie.com; frame-ancestors 'none'; base-uri 'none'"}})),
  GET('/',async request=>{
   const denied=await authorize(request);if(denied)return denied;

@@ -41,5 +41,37 @@
     "No se escuchó ni descargó el álbum desde este entorno.",
     "No hay cortes de audio ni campañas publicadas automáticamente.",
     "No se necesita API para copiar estas publicaciones y compartir el disco."
+  ],
+  "automation": {
+    "kind": "ChatGPT scheduled task",
+    "title": "Distribución diaria de K1N",
+    "cadence": "daily",
+    "starts": "2026-10-12",
+    "time_window": "15:00–16:00 America/Buenos_Aires",
+    "enabled_at_creation": true,
+    "scope": "investigación de oportunidades y borradores; sin envíos ni publicaciones"
+  },
+  "opportunities": [
+    {
+      "name": "Fedi Drama Radio",
+      "source": "https://radio.tuiter.rocks/envia-tu-musica/",
+      "contact": "radio@tuiterx.rocks",
+      "status": "faltan títulos, archivo/listen privado y permiso explícito de emisión",
+      "draft": "Hola, soy K1N. Quisiera proponer B.R.I.S.T.O.L para su escucha editorial. El disco está en https://www.youtube.com/watch?v=my4E2FRFuH8 y mi perfil en https://open.spotify.com/artist/5Kmf6GWJeI4y8XOTNZ5c63 . ¿Podemos conversar sobre qué temas encajan en su programación? Antes de cualquier emisión acordamos los temas y la autorización correspondiente."
+    },
+    {
+      "name": "Rocktails",
+      "source": "https://www.rocktails.tv/contacto",
+      "contact": "SubmitHub exclusivamente",
+      "status": "evaluar requisitos y costos en SubmitHub; sin envío",
+      "draft": ""
+    },
+    {
+      "name": "Catarxis FM / ALTAVOZ",
+      "source": "https://www.catarxis.com/p/convocatoria-musicos-independientes-radio-2026",
+      "contact": "formulario publicado en la fuente",
+      "status": "requiere un sencillo, audio, portada, metadatos y permiso de emisión; sin envío",
+      "draft": ""
+    }
   ]
 }
