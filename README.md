@@ -11,3 +11,5 @@ No se ha desplegado ni conectado a cuentas. No hay autopublicación pública, pa
 Ver DEPLOY.md para requisitos, configuración, limitaciones y operación.
 
 Validación: npm run typecheck; npm run build; python3 -m unittest discover -s tests -v.
+
+Modo sin archivos: /listen es la página pública del disco. El panel arranca con una campaña de enlaces y textos listos. Sin AI_GATEWAY_API_KEY el asistente ofrece un plan fijo, identificado como reglas. No requiere presupuesto de modelo para arrancar.

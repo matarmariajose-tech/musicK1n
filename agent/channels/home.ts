@@ -24,9 +24,10 @@ async function limited(request:Request,limit:number) {
 }
 const actions=new Set(['track','experiment','render','approve','published','metrics','report','contact','spotify-sync','youtube-sync','upload-private','oauth-start']);
 export default defineChannel({routes:[
+ GET('/listen',async()=>new Response(await readFile(resolve(project,'web/listen.html'),'utf8'),{headers:{...headers,'Content-Type':'text/html; charset=utf-8','Content-Security-Policy':"default-src 'self'; style-src 'unsafe-inline'; frame-src https://www.youtube-nocookie.com; frame-ancestors 'none'; base-uri 'none'"}})),
  GET('/',async request=>{
   const denied=await authorize(request);if(denied)return denied;
-  return new Response(await readFile(resolve(project,'web/index.html'),'utf8'),{headers:{...headers,'Content-Type':'text/html; charset=utf-8','Content-Security-Policy':"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'"}});
+  return new Response(await readFile(resolve(project,'web/index.html'),'utf8'),{headers:{...headers,'Content-Type':'text/html; charset=utf-8','Content-Security-Policy':"default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; media-src 'self' blob:; img-src 'self' data:; connect-src 'self'; frame-src https://www.youtube-nocookie.com https://open.spotify.com; frame-ancestors 'none'; base-uri 'none'"}});
  }),
  GET('/oauth/google/callback',async request=>{
   const denied=await authorize(request);if(denied)return denied;
@@ -37,11 +38,12 @@ export default defineChannel({routes:[
    return Response.redirect(new URL('/',request.url),303);
   }catch(err){return new Response(err instanceof Error?err.message:'No se pudo autorizar',{status:400,headers});}
  }),
- GET('/api/overview' ,async request=>{const denied=await authorize(request);if(denied)return denied;return Response.json(await rpc('overview'),{headers});}),
+ GET('/api/campaign',async request=>{const denied=await authorize(request);if(denied)return denied;return Response.json(await rpc('campaign'),{headers});}),
+ GET('/api/overview'  ,async request=>{const denied=await authorize(request);if(denied)return denied;return Response.json(await rpc('overview'),{headers});}),
  POST('/api/ask',async(request,{from})=>{
   const denied=await authorize(request);if(denied)return denied;
   try {
-   if(!process.env.AI_GATEWAY_API_KEY)throw new Error('Falta configurar AI_GATEWAY_API_KEY');
+   if(!process.env.AI_GATEWAY_API_KEY){const campaign=await rpc('campaign');return Response.json({mode:'rules',reply:'Plan con el material disponible (sin modelo de IA):\n\n'+campaign.next_steps.join('\n')+'\n\nPrimer texto listo:\n'+campaign.posts[0].text+'\n\nNo se han publicado mensajes ni generado tráfico automáticamente.'},{headers});}
    const body=JSON.parse(new TextDecoder().decode(await limited(request,20000)));
    if(typeof body.message!=='string' || !body.message.trim() || body.message.length>10000)throw new Error('Mensaje inválido');
    const auth=await operator(request);

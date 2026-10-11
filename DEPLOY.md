@@ -34,3 +34,6 @@ Los contactos quedan como borradores. El agente lee el catálogo y métricas, no
 Respaldar `/data`, incluida la base SQLite de forma coherente (SQLite backup API). Un solo worker toma un lock de proceso. Al reiniciar, los renders interrumpidos se marcan fallidos y se reencolan manualmente. Subidas reintentan la misma sesión resumible; una sesión expirada exige revisión para evitar duplicados. No borrar el registro de subida sin consultar Studio.
 
 La interfaz acepta hasta 50 MiB por archivo. Usa autenticación HTTP Basic sobre HTTPS; es un panel de un solo operador. No ofrece cuentas múltiples. FFmpeg se ejecuta con límites de duración y timeout; para procesar archivos de usuarios no confiables se necesitaría aislamiento adicional. Los endpoints externos reales deben verificarse después de configurar cuentas: las pruebas locales no reemplazan una prueba de OAuth y subida real.
+
+## Arranque sin claves ni audios
+El panel empieza con el álbum en YouTube y tres textos listos para compartir. El asistente devuelve un plan fijo identificado como reglas cuando no hay clave de IA. No finge usar un modelo ni escuchar el álbum. Los uploads, OAuth y Spotify API son opcionales para esta modalidad.

@@ -9,6 +9,10 @@ try:urllib.request.urlopen(base+'/')
 except urllib.error.HTTPError as e:assert e.code==401
 else:raise AssertionError('unauthorized access')
 assert b'Growth Studio' in req('/')[1]
+assert urllib.request.urlopen(base+'/listen').status==200
+assert b'B.R.I.S.T.O.L' in urllib.request.urlopen(base+'/listen').read()
+reply=json.loads(req('/api/ask',b'{"message":"Que publico"}',{'Content-Type':'application/json'})[1]);assert reply['mode']=='rules' and 'B.R.I.S.T.O.L' in reply['reply']
+assert len(json.loads(req('/api/campaign')[1])['posts'])==3
 try:req('/api/action',b'{"action":"report"}',{'Content-Type':'application/json','Origin':'https://evil.example'})
 except urllib.error.HTTPError as e:assert e.code==403
 else:raise AssertionError('cross origin accepted')

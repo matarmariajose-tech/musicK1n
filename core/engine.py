@@ -51,6 +51,7 @@ def register_asset(db,p):
  db.execute('INSERT INTO assets VALUES(?,?,?,?,?)',(ident,text(p['name']),kind,str(path),duration));return {'id':ident,'duration':duration}
 
 def dispatch(db,action,p):
+ if action=='campaign':return json.loads((ROOT/'campaign.json').read_text())
  if action=='overview':
   return {'tracks':rows(db,'SELECT * FROM tracks ORDER BY created DESC'),'assets':rows(db,'SELECT id,name,kind,duration FROM assets'),'experiments':rows(db,'SELECT e.*,t.title AS track_title FROM experiments e JOIN tracks t ON t.id=e.track_id ORDER BY e.created DESC'),'jobs':rows(db,'SELECT * FROM jobs ORDER BY created DESC LIMIT 50'),'metrics':rows(db,'SELECT * FROM metrics'),'contacts':rows(db,'SELECT * FROM contacts'),'catalog':json.loads((ROOT/'catalog.json').read_text()),'connections':{'google':bool(os.environ.get('GOOGLE_REFRESH_TOKEN') or db.execute('SELECT 1 FROM settings WHERE key="google_refresh"').fetchone()),'spotify':bool(os.environ.get('SPOTIFY_CLIENT_ID') and os.environ.get('SPOTIFY_CLIENT_SECRET')),'model':bool(os.environ.get('AI_GATEWAY_API_KEY'))}}
  if action=='oauth-start':
