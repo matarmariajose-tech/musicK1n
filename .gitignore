@@ -11,3 +11,7 @@ dist
 
 __pycache__/
 *.sqlite
+
+data/
+
+!.env.example
