@@ -1,0 +1,7 @@
+node_modules
+.git
+.env*
+.eve
+.output
+__pycache__
+*.sqlite
