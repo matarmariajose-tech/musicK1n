@@ -1,15 +1,22 @@
-# K1N Growth Studio
+# Empezar con K1N Growth Studio
 
-Panel web protegido y agente musical para K1N / B.R.I.S.T.O.L.
+La guía de requisitos, funcionalidades y arquitectura está en [README.md](README.md).
+La configuración del servicio y de las cuentas externas está en [DEPLOY.md](DEPLOY.md).
 
-Flujo: audio y portada → canciones → experimentos → clips verticales → revisión → subida privada YouTube → resultados → siguiente experimento.
+Con Node.js 24, Python 3, FFmpeg, FFprobe, `cryptography` y un proveedor de sandbox compatible instalados:
 
-Implementado: carga de archivos, SQLite durable, FFmpeg en worker, aprobaciones, OAuth Google cifrado, adaptadores de YouTube Analytics y upload resumible privado, catálogo público Spotify, CSV de métricas y CRM de borradores.
+```bash
+npm ci
+npm run typecheck
+npm run build
+npm test
+npm run test:http
+```
 
-No se ha desplegado ni conectado a cuentas. No hay autopublicación pública, pauta, investigación autónoma de contactos, subtítulos ni integración TikTok/Instagram.
+Para usar el panel, configurar las variables de entorno indicadas en `.env.example` y ejecutar:
 
-Ver DEPLOY.md para requisitos, configuración, limitaciones y operación.
+```bash
+node launcher.mjs
+```
 
-Validación: npm run typecheck; npm run build; python3 -m unittest discover -s tests -v.
-
-Modo sin archivos: /listen es la página pública del disco. El panel arranca con una campaña de enlaces y textos listos. Sin AI_GATEWAY_API_KEY el asistente ofrece un plan fijo, identificado como reglas. No requiere presupuesto de modelo para arrancar.
+El modo basado en reglas permite empezar con enlaces existentes, sin conectar cuentas externas ni configurar una clave de modelo. Las pruebas usan archivos y datos temporales; no suben videos a YouTube.

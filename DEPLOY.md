@@ -26,11 +26,19 @@ Para importar el catálogo público: crear una aplicación en Spotify Developer 
 ## Uso y validación
 Cargar una canción y portada, crear un segmento de 5–60 segundos, generar clip, esperar al worker, descargar y revisar, aprobar. Subir privado con confirmación o publicar manualmente y vincular el id.
 
-Pruebas: `python3 -m unittest discover -s tests -v`, `npm run typecheck`, `npm run build`. Para desarrollo local instalar ffmpeg, ffprobe y cryptography, exportar las variables y ejecutar `node launcher.mjs` después de compilar.
+Pruebas: `npm run typecheck`, `npm run build`, `npm test`, `npm run test:http`. Para desarrollo local instalar ffmpeg, ffprobe y cryptography, exportar las variables y ejecutar `node launcher.mjs` después de compilar. La prueba HTTP usa una copia temporal del proyecto y termina el servidor y el worker que inicia.
+
+El framework prepara un sandbox durante el build. La compilación local se verificó con Docker disponible; no se verificó la construcción del Dockerfile en Render. No asumir que un contenedor de build puede acceder al daemon Docker: el proveedor de sandbox debe ser compatible con el entorno elegido antes de desplegar.
+
+`K1N_MODEL` selecciona el modelo y `K1N_MODEL_CONTEXT_TOKENS` fija el presupuesto de contexto usado por el framework, con 32.000 tokens por defecto. Se leen al compilar. Al cambiar de modelo, ajustar ese presupuesto a sus límites y volver a ejecutar el build. Sin `AI_GATEWAY_API_KEY`, el panel usa reglas y no invoca el modelo.
 
 Los contactos quedan como borradores. El agente lee el catálogo y métricas, no tiene herramientas que publiquen ni envíen mensajes. No hay pauta automática, compra de views, scheduler de marketing ni integración TikTok/Instagram. Las variantes gráficas actuales son portada y onda sonora; aún no hay subtítulos de letra ni edición visual con IA.
 
 ## Operación
+Al abrir una base existente, se agrega `cover_id` a los experimentos sin eliminar registros. Los experimentos antiguos con formato de portada conservan sus clips; antes de volver a renderizarlos, el panel exige seleccionar una imagen explícitamente. No se les asigna la última portada cargada.
+
+Una subida privada puede registrarse como publicada después de la revisión manual en Studio. Debe conservar el mismo identificador de YouTube. Repetir la confirmación no duplica el evento de auditoría; una subida pendiente o en curso bloquea esa confirmación.
+
 Respaldar `/data`, incluida la base SQLite de forma coherente (SQLite backup API). Un solo worker toma un lock de proceso. Al reiniciar, los renders interrumpidos se marcan fallidos y se reencolan manualmente. Subidas reintentan la misma sesión resumible; una sesión expirada exige revisión para evitar duplicados. No borrar el registro de subida sin consultar Studio.
 
 La interfaz acepta hasta 50 MiB por archivo. Usa autenticación HTTP Basic sobre HTTPS; es un panel de un solo operador. No ofrece cuentas múltiples. FFmpeg se ejecuta con límites de duración y timeout; para procesar archivos de usuarios no confiables se necesitaría aislamiento adicional. Los endpoints externos reales deben verificarse después de configurar cuentas: las pruebas locales no reemplazan una prueba de OAuth y subida real.

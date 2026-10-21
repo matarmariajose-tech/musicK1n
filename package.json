@@ -12,7 +12,9 @@
     "dev": "eve dev",
     "eval": "eve eval",
     "start": "eve start",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "test": "python3 -m unittest discover -s tests -v",
+    "test:http": "python3 tests/run_http.py"
   },
   "dependencies": {
     "@vercel/connect": "2.2.0",
