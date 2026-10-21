@@ -57,7 +57,9 @@ El despliegue utiliza una sola instancia con almacenamiento persistente. El serv
 
 ## Estado y alcance
 
-El proyecto todavía no se desplegó ni se validó con cuentas reales. Las pruebas locales cubren renderizado con FFmpeg y adaptadores simulados; no sustituyen una validación de OAuth, métricas o subida con los servicios externos.
+OAuth de Google, la subida privada y la consulta de métricas de YouTube se validaron manualmente con la cuenta de artista independiente de la autora.
+
+Las pruebas automatizadas cubren renderizado con FFmpeg, el flujo de trabajo y adaptadores simulados. Se ejecutan sin cuentas externas; la validación manual de YouTube es independiente de esa suite. La integración de Spotify no forma parte de esa validación.
 
 Las subidas a YouTube son privadas y requieren aprobación y confirmación explícitas. La publicación pública se realiza manualmente desde YouTube Studio.
 

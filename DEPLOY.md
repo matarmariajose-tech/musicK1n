@@ -24,6 +24,8 @@ Las subidas requieren clip revisado, aprobación y confirmación explícita. Se 
 Para importar el catálogo público: crear una aplicación en Spotify Developer Dashboard y cargar `SPOTIFY_CLIENT_ID` y `SPOTIFY_CLIENT_SECRET`. El acceso está sujeto a los permisos y restricciones de tu aplicación. No usa Spotify para reproducir canciones. Las métricas de Spotify for Artists deben exportarse y normalizarse en el formato CSV de la interfaz; no existe un conector de Analytics for Artists aquí. No atribuir streams de canciones a clips sin evidencia.
 
 ## Uso y validación
+OAuth de Google, la subida privada de videos y la consulta de YouTube Analytics se validaron manualmente con la cuenta de artista independiente de la autora. Esta comprobación no incluye Spotify ni acredita un despliegue en Render.
+
 Cargar una canción y portada, crear un segmento de 5–60 segundos, generar clip, esperar al worker, descargar y revisar, aprobar. Subir privado con confirmación o publicar manualmente y vincular el id.
 
 Pruebas: `npm run typecheck`, `npm run build`, `npm test`, `npm run test:http`. Para desarrollo local instalar ffmpeg, ffprobe y cryptography, exportar las variables y ejecutar `node launcher.mjs` después de compilar. La prueba HTTP usa una copia temporal del proyecto y termina el servidor y el worker que inicia.
@@ -41,7 +43,7 @@ Una subida privada puede registrarse como publicada después de la revisión man
 
 Respaldar `/data`, incluida la base SQLite de forma coherente (SQLite backup API). Un solo worker toma un lock de proceso. Al reiniciar, los renders interrumpidos se marcan fallidos y se reencolan manualmente. Subidas reintentan la misma sesión resumible; una sesión expirada exige revisión para evitar duplicados. No borrar el registro de subida sin consultar Studio.
 
-La interfaz acepta hasta 50 MiB por archivo. Usa autenticación HTTP Basic sobre HTTPS; es un panel de un solo operador. No ofrece cuentas múltiples. FFmpeg se ejecuta con límites de duración y timeout; para procesar archivos de usuarios no confiables se necesitaría aislamiento adicional. Los endpoints externos reales deben verificarse después de configurar cuentas: las pruebas locales no reemplazan una prueba de OAuth y subida real.
+La interfaz acepta hasta 50 MiB por archivo. Usa autenticación HTTP Basic sobre HTTPS; es un panel de un solo operador. No ofrece cuentas múltiples. FFmpeg se ejecuta con límites de duración y timeout; para procesar archivos de usuarios no confiables se necesitaría aislamiento adicional. Al configurar otra cuenta o entorno, comprobar OAuth, subida privada y métricas con sus propios permisos. Las pruebas automatizadas no acceden a las cuentas reales.
 
 ## Arranque sin claves ni audios
 El panel empieza con el álbum en YouTube y tres textos listos para compartir. El asistente devuelve un plan fijo identificado como reglas cuando no hay clave de IA. No finge usar un modelo ni escuchar el álbum. Los uploads, OAuth y Spotify API son opcionales para esta modalidad.
